@@ -1,0 +1,8 @@
+product_id,product_name,category,weeks_observed,first_week,last_week,distinct_prices,avg_price,total_units_sold,is_sparse,sparse_reason,is_single_price
+P-1001,Heavyweight Pullover Hoodie,Apparel,22,2022-11-07,2024-10-14,5,81.44,1011,False,,False
+P-1002,Ribbed Merino Beanie,Apparel,17,2022-11-07,2024-10-21,4,34.47,616,False,,False
+P-1003,Waxed Canvas Tote,Accessories,14,2022-11-14,2024-10-28,4,61.29,224,False,,False
+P-1004,Stoneware Camp Mug,Home,12,2022-11-07,2024-10-21,3,26.0,332,False,,False
+P-1005,Cedar & Smoke Soy Candle,Home,6,2024-09-16,2024-10-28,1,34.0,81,True,weeks_observed 6 < 8,True
+P-1006,Holiday Enamel Pin Set,Accessories,4,2023-11-06,2023-12-04,1,18.0,214,True,weeks_observed 4 < 8,True
+P-1007,Leather Key Fob,Accessories,4,2024-06-10,2024-10-14,2,25.5,25,True,weeks_observed 4 < 8,False
