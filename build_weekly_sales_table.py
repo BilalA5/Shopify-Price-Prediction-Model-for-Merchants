@@ -8,10 +8,7 @@ seven products split cleanly into 4-6 weeks and 12-22 weeks, with none between 7
 11, so any cutoff from 7 to 12 gives the same flags. 8 keeps a one-week margin above
 the sparse group and is short enough not to flag products with a normal run of data.
 
-Coverage (weeks observed / 41 weeks in the export) is a second, separate rule. It
-flags products below 25%, which is about 10 weeks, so it can flag products with 8-10
-weeks that the weeks rule would not. No product falls in that range today, so the
-two rules agree on this export.
+The reasoning for the sparse cutoff and the coverage rule is in README.md (Data section).
 """
 
 from pathlib import Path
@@ -22,7 +19,7 @@ BASE_DIR = Path(__file__).resolve().parent
 RAW_PATH = BASE_DIR / "Store Weekly Sales History Export.csv"
 OUTPUT_PATH = BASE_DIR / "product_table.csv"
 
-# A product is sparse if it fails either condition below (see module overview).
+# A product is sparse if it fails either condition below (reasoning in README.md).
 MIN_WEEKS_OBSERVED = 8
 MIN_COVERAGE = 0.25
 
