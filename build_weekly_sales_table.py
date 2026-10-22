@@ -1,4 +1,18 @@
-#Build a one-row-per-product table from the store weekly sales export.
+"""Build a one-row-per-product table from the store weekly sales export.
+
+Overview: each product_id gets one row with its sales history, an is_single_price
+flag (true when only one price was ever seen) and an is_sparse flag (true when the
+product has fewer than MIN_WEEKS_OBSERVED weeks of history). The cutoff of 8 weeks
+(about two months of weekly data) is a judgment call, but the data supports it: the
+seven products split cleanly into 4-6 weeks and 12-22 weeks, with none between 7 and
+11, so any cutoff from 7 to 12 gives the same flags. 8 keeps a one-week margin above
+the sparse group and is short enough not to flag products with a normal run of data.
+
+Coverage (weeks observed / 41 weeks in the export) is a second, separate rule. It
+flags products below 25%, which is about 10 weeks, so it can flag products with 8-10
+weeks that the weeks rule would not. No product falls in that range today, so the
+two rules agree on this export.
+"""
 
 from pathlib import Path
 
@@ -8,7 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent
 RAW_PATH = BASE_DIR / "Store Weekly Sales History Export.csv"
 OUTPUT_PATH = BASE_DIR / "product_table.csv"
 
-# A product is sparse if it fails either condition below.
+# A product is sparse if it fails either condition below (see module overview).
 MIN_WEEKS_OBSERVED = 8
 MIN_COVERAGE = 0.25
 
@@ -83,8 +97,18 @@ def build_product_table(weekly: pd.DataFrame) -> pd.DataFrame:
     )
 
     table["coverage"] = table["weeks_observed"] / total_weeks
+
+    # is_sparse: a sparse product has too little weekly history to estimate its own
+    # demand response to price, so it should get fallback rules rather than its own
+    # model. The rule trips when weeks_observed is below MIN_WEEKS_OBSERVED or
+    # coverage is below MIN_COVERAGE; sparse_reason names whichever condition fired.
+    # is_sparse is derived from sparse_reason so the flag and the reason cannot disagree.
     table["sparse_reason"] = table.apply(sparse_reason, axis=1)
     table["is_sparse"] = table["sparse_reason"] != ""
+
+    # is_single_price: true when only one price was ever seen for the product. With no
+    # price variation there is nothing to compare demand against, so price response
+    # cannot be learned from that product's own history.
     table["is_single_price"] = table["distinct_prices"] == 1
 
     if not table["product_id"].is_unique:
